@@ -1,0 +1,70 @@
+const cacheName = 'blogCache-latest';
+const offlineUrl = '/offline/';
+
+/**
+ * The event listener for the service worker installation
+ */
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(cacheName)
+            .then(cache => cache.addAll([
+                './assets/font/beyond_the_mountains.ttf',
+                './assets/font/icons.woff2',
+                offlineUrl
+            ]))
+    );
+});
+
+/**
+ * Is the current request for an HTML page?
+ * @param {Object} event 
+ */
+function isHtmlPage(event) {
+    return event.request.method === 'GET' && event.request.headers.get('accept').includes('text/html');
+}
+
+/**
+ * Check to see if the current connection is 2g
+ * and if so, return empty svg placeholder
+ */
+function returnImagePlaceholder() {
+
+    // Check if the request is for an image
+    if (/\.jpg$|.png$|.gif$|.webp$/.test(event.request.url)) {
+
+        // Return no images
+        return fetch('placeholder.svg', {
+                mode: 'no-cors'
+            });
+    }
+}
+
+/**
+ * Fetch and cache any results as we receive them.
+ */
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (url.origin === location.origin) {
+    event.respondWith(cacheFirst(request));
+  } else {
+    event.respondWith(networkFirst(request));
+  }
+});
+
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+  return cachedResponse || fetch(request);
+}
+
+async function networkFirst(request) {
+  const dynamicCache = await caches.open('news-dynamic');
+  try {
+    const networkResponse = await fetch(request);
+    dynamicCache.put(request, networkResponse.clone());
+    return networkResponse;
+  } catch (err) {
+    const cachedResponse = await dynamicCache.match(request);
+    return cachedResponse || await caches.match('./fallback.json');
+  }
+}
