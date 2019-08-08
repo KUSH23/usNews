@@ -34,7 +34,7 @@ const urlB64ToUint8Array = base64String => {
 };
 
 const saveSubscription = async subscription => {
-  const SERVER_URL = "http://127.0.0.1:5000/save-subscription";
+  const SERVER_URL = "http://localhost:4000/save-subscription";
   const response = await fetch(SERVER_URL, {
     method: "post",
     headers: {
@@ -58,12 +58,12 @@ async function subscribeUser() {
       return registration.pushManager.subscribe(subscribeOptions);
     })
     .then(async function(pushSubscription) {
-      try {
-        const response = await saveSubscription(pushSubscription);
-        console.log(response);
-      } catch (err) {
-        console.log("Error", err);
-      }
+      // try {
+      //   const response = await saveSubscription(JSON.stringify(pushSubscription));
+      //   console.log(response);
+      // } catch (err) {
+      //   console.log("Error", err);
+      // }
       console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
       return pushSubscription;
     });
@@ -99,43 +99,27 @@ function displayNotification() {
 }
 
 let newWorker;
-(function() {
-  if('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-                .then(function(registration) {
-                    registration.addEventListener('updatefound', () => {
-                        // A wild service worker has appeared in reg.installing!
-                        newWorker = registration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            // Has network.state changed?
-                            switch (newWorker.state) {
-                            case 'installed':
-                                if (navigator.serviceWorker.controller) {
-                                // new update available
-                                showUpdateBar();
-                                }
-                                // No update available
-                                break;
-                            }
-                        });
-                        });
-                console.log('Service Worker Registered');
-                displayNotification();
-                return registration;
-    })
-    .catch(function(err) {
-        console.error('Unable to register service worker.', err);
+navigator.serviceWorker.register('sw.js').then(function(reg){
+  reg.addEventListener('updatefound', () => {
+    // A wild service worker has appeared in reg.installing!
+    newWorker = reg.installing;
+    newWorker.addEventListener('statechange', () => {
+      // Has network.state changed?
+      switch (newWorker.state) {
+        case 'installed':
+          if (navigator.serviceWorker.controller) {
+            // new update available
+            showUpdateBar();
+          }
+          // No update available
+          break;
+      }
     });
-    navigator.serviceWorker.ready.then(function(registration) {
-        console.log('Service Worker Ready');
-    });
-    });
-}
-})();
-  
-
-
+  });
+  return reg;
+}).catch(function(err) {
+  console.error('Unable to register service worker.', err);
+});
 
 function askPermission() {
   return new Promise(function(resolve, reject) {
