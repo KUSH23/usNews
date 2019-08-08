@@ -11,44 +11,26 @@ const staticAssets = [
 
 
 
-self.addEventListener('install', async function () {
-  const cache = await caches.open(cacheName);
-  cache.addAll(staticAssets);
+self.addEventListener("install", event => {
+  console.log("Service worker added");
+  event.waitUntil(
+    caches.open(cacheName).then(cache => {
+      cache.addAll(staticAssets);
+    })
+  );
 });
-
-self.addEventListener('message', function (event) {
-  if (event.data.action === 'skipWaiting') {
-    self.skipWaiting();
-  }
-});
-
-self.addEventListener('activate', event => {
+self.addEventListener("activate", event => {
+  console.log("Service worker activate triggered");
   event.waitUntil(self.clients.claim());
 });
-
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  const url = new URL(request.url);
-  if (url.origin === location.origin) {
-    event.respondWith(cacheFirst(request));
-  } else {
-    event.respondWith(networkFirst(request));
-  }
+self.addEventListener("fetch", event => {
+  console.log(event.request.url);
+  event.respondWith(
+    caches.match(event.request).then(res => {
+      return res || fetch(event.request);
+    })
+  );
 });
-
-async function cacheFirst(request) {
-  const cachedResponse = await caches.match(request);
-  return cachedResponse || fetch(request);
-}
-
-async function networkFirst(request) {
-  try {
-    const networkResponse = await fetch(request);
-    return networkResponse;
-  } catch (err) {
-    return await caches.match('./fallback.json');
-  }
-}
 
 self.addEventListener("push", function(event) {
   var body;

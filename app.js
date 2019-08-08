@@ -97,29 +97,42 @@ function displayNotification() {
     askPermission();
    }
 }
-
 let newWorker;
-navigator.serviceWorker.register('sw.js').then(function(reg){
-  reg.addEventListener('updatefound', () => {
-    // A wild service worker has appeared in reg.installing!
-    newWorker = reg.installing;
-    newWorker.addEventListener('statechange', () => {
-      // Has network.state changed?
-      switch (newWorker.state) {
-        case 'installed':
-          if (navigator.serviceWorker.controller) {
-            // new update available
-            showUpdateBar();
-          }
-          // No update available
-          break;
-      }
-    });
-  });
-  return reg;
-}).catch(function(err) {
-  console.error('Unable to register service worker.', err);
-});
+(function() {
+  if('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+     
+      navigator.serviceWorker.register('/sw.js')
+                  .then(function(registration) {
+                      registration.addEventListener('updatefound', () => {
+                          // A wild service worker has appeared in reg.installing!
+                          newWorker = registration.installing;
+                          newWorker.addEventListener('statechange', () => {
+                              // Has network.state changed?
+                              switch (newWorker.state) {
+                              case 'installed':
+                                  if (navigator.serviceWorker.controller) {
+                                  // new update available
+                                  showUpdateBar();
+                                  }
+                                  // No update available
+                                  break;
+                              }
+                          });
+                          });
+                  console.log('Service Worker Registered');
+                  displayNotification();
+                  return registration;
+      })
+      .catch(function(err) {
+          console.error('Unable to register service worker.', err);
+      });
+      navigator.serviceWorker.ready.then(function(registration) {
+          console.log('Service Worker Ready');
+      });
+      });
+  }
+  })();
 
 function askPermission() {
   return new Promise(function(resolve, reject) {
