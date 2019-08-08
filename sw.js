@@ -18,19 +18,37 @@ self.addEventListener("install", event => {
       cache.addAll(staticAssets);
     })
   );
+  self.skipWaiting();
 });
 self.addEventListener("activate", event => {
   console.log("Service worker activate triggered");
   event.waitUntil(self.clients.claim());
 });
-self.addEventListener("fetch", event => {
-  console.log(event.request.url);
-  event.respondWith(
-    caches.match(event.request).then(res => {
-      return res || fetch(event.request);
-    })
-  );
+
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (url.origin === location.origin) {
+    event.respondWith(cacheFirst(request));
+  } else {
+    event.respondWith(networkFirst(request));
+  }
 });
+
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+  return cachedResponse || fetch(request);
+}
+
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+    return networkResponse;
+  } catch (err) {
+    const cachedResponse = await cacheName.match(request);
+    return cachedResponse || await caches.match('./fallback.json');
+  }
+}
 
 self.addEventListener("push", function(event) {
   var body;
