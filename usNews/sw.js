@@ -11,18 +11,17 @@ const staticAssets = [
 
 
 
-self.addEventListener('install', async function () {
-  const cache = await caches.open(cacheName);
-  cache.addAll(staticAssets);
+self.addEventListener("install", event => {
+  console.log("Service worker added");
+  event.waitUntil(
+    caches.open(cacheName).then(cache => {
+      cache.addAll(staticAssets);
+    })
+  );
+  self.skipWaiting();
 });
-
-self.addEventListener('message', function (event) {
-  if (event.data.action === 'skipWaiting') {
-    self.skipWaiting();
-  }
-});
-
-self.addEventListener('activate', event => {
+self.addEventListener("activate", event => {
+  console.log("Service worker activate triggered");
   event.waitUntil(self.clients.claim());
 });
 
@@ -46,7 +45,8 @@ async function networkFirst(request) {
     const networkResponse = await fetch(request);
     return networkResponse;
   } catch (err) {
-    return await caches.match('./fallback.json');
+    const cachedResponse = await cacheName.match(request);
+    return cachedResponse || await caches.match('./fallback.json');
   }
 }
 
