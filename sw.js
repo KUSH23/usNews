@@ -18,7 +18,6 @@ self.addEventListener("install", event => {
       cache.addAll(staticAssets);
     })
   );
-  self.skipWaiting();
 });
 self.addEventListener("activate", event => {
   console.log("Service worker activate triggered");
