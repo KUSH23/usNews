@@ -59,7 +59,7 @@ self.addEventListener("push", function(event) {
   }
   var options = {
     body: body,
-    icon: '/images/icons/icon-192x192.png',
+    icon: './images/icons/icon-192x192.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -67,9 +67,9 @@ self.addEventListener("push", function(event) {
     },
     actions: [
       {action: 'explore', title: 'Explore this new world',
-        icon: 'images/icons/icon-192x192.png'},
+        icon: './images/icons/icon-192x192.png'},
       {action: 'close', title: 'I don\'t want any of this',
-        icon: 'images/fetch-dog.jpg'},
+        icon: './images/fetch-dog.jpg'},
     ]
   };
   event.waitUntil(
