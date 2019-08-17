@@ -75,7 +75,7 @@ function displayNotification() {
     navigator.serviceWorker.getRegistration().then(function(reg) {
       var options = {
         body: 'Welcome!',
-        icon: 'images/icons/icon-192x192.png',
+        icon: './images/icons/icon-192x192.png',
         vibrate: [100, 50, 100],
         data: {
           dateOfArrival: Date.now(),
@@ -83,9 +83,9 @@ function displayNotification() {
         },
         actions: [
           {action: 'explore', title: 'Explore this new world',
-            icon: 'images/fetch-dog.jpg'},
+            icon: './images/fetch-dog.jpg'},
           {action: 'close', title: 'Close notification',
-            icon: 'images/fetch-dog.jpg'},
+            icon: './images/fetch-dog.jpg'},
         ]
       };
       reg.showNotification('Daily News!', options);
@@ -153,7 +153,7 @@ window.addEventListener('load', e => {
     sourceSelector.value = defaultSource;
     updateNews();
   });
-  askPermission()
+  displayNotification();
 });
 
 window.addEventListener('online', () => updateNews(sourceSelector.value));
