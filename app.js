@@ -51,7 +51,7 @@ async function subscribeUser() {
       const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: urlB64ToUint8Array(
-          'BJl2UO7gEhko9NIW9DS_H_9eqJhRlM5Jsd_JQw7fq2zehoB_IC74p2DAnK8Mti1u50yiO5IffXmRxdlWbP2vwr4'
+          'BEBbiRZBubtnMeoJtnXKtn60dosx0atJ3O65ofGo6Xh2qn1qC_-xzOftVJCdWlP64mZ06zUiMfbVHEuhvrfca1A'
         )
       };
   
