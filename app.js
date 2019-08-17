@@ -94,7 +94,7 @@ function displayNotification() {
   }else if (Notification.permission === "blocked") {
     askPermission();
    } else {
-    askPermission();
+    console.log('Err');
    }
 }
 let newWorker;
@@ -137,15 +137,6 @@ function askPermission() {
     }
   });
 }
-// Notification.requestPermission(function(status) {
-//   console.log('Notification permission status:', status);
-//   displayNotification();
-//   if (status !== 'granted') {
-//     throw new Error('We weren\'t granted permission.');
-//   }else{
-//     subscribeUser();
-//   }
-// }); 
 
 window.addEventListener('load', e => {
   sourceSelector.addEventListener('change', evt => updateNews(evt.target.value));
@@ -153,7 +144,6 @@ window.addEventListener('load', e => {
     sourceSelector.value = defaultSource;
     updateNews();
   });
-  displayNotification();
 });
 
 window.addEventListener('online', () => updateNews(sourceSelector.value));
