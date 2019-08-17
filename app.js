@@ -94,7 +94,7 @@ function displayNotification() {
   }else if (Notification.permission === "blocked") {
     askPermission();
    } else {
-    console.log('Err');
+    askPermission();
    }
 }
 let newWorker;
