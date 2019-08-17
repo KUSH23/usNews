@@ -132,7 +132,6 @@ function askPermission() {
     if (permissionResult !== 'granted') {
       throw new Error('We weren\'t granted permission.');
     }else{
-      displayNotification();
       subscribeUser();
     }
   });
